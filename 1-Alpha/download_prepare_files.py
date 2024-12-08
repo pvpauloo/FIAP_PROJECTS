@@ -31,8 +31,10 @@ def trata_tipo_csv(loader, rota):
     }
     
     delimiter = detect_delimiter(loader)
-    data = pd.read_csv(loader, delimiter=delimiter)
-
+    try:
+        data = pd.read_csv(loader, delimiter=delimiter)
+    except:
+        print("Erro ao tendar baixar o arquivo: ",loader)
     if rota in tiposCsv.keys():
         data.columns = [col.title() for col in data.columns]
         data["Tipo"] = data[tiposCsv[rota]].apply(lambda x: x if x.isupper() else None)
