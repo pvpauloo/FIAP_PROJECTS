@@ -31,10 +31,8 @@ def trata_tipo_csv(loader, rota):
     }
     
     delimiter = detect_delimiter(loader)
-    try:
-        data = pd.read_csv(loader, delimiter=delimiter)
-    except:
-        print("Erro ao tendar baixar o arquivo: ",loader)
+    data = pd.read_csv(loader, delimiter=delimiter)
+
     if rota in tiposCsv.keys():
         data.columns = [col.title() for col in data.columns]
         data["Tipo"] = data[tiposCsv[rota]].apply(lambda x: x if x.isupper() else None)
@@ -48,6 +46,7 @@ def trata_tipo_csv(loader, rota):
 
     colunas = [x for x in data.columns if not (re.match(r"\d{4}\.1", x) or x.isdigit())]
     data = pd.melt(data, id_vars=colunas, var_name="Ano", value_name="Valor")
+
     return data
 
 def processar_dados():
@@ -57,7 +56,11 @@ def processar_dados():
             dfs = []
             for q in path[p]:
                 csv_loader = f"{baseURL}{q}"
-                data = trata_tipo_csv(csv_loader, p)
+                try:
+                    data = trata_tipo_csv(csv_loader, p)
+                except:
+                    print("Erro ao tendar baixar o arquivo: ",csv_loader)
+                    continue
                 data["Source"] = q
                 dfs.append(data)
             data = pd.concat(dfs, ignore_index=True)
