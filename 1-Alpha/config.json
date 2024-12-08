@@ -1,0 +1,10 @@
+{
+    "baseURL": "http://vitibrasil.cnpuv.embrapa.br/download/",
+    "path": {
+      "Producao": "Producao.csv",
+      "Processamento": ["ProcessaViniferas.csv", "ProcessaAmericanas.csv", "ProcessaMesa.csv", "ProcessaSemclass.csv"],
+      "Comercializacao": "Comercio.csv",
+      "Importacao": ["ImpVinhos.csv", "ImpEspumantes.csv", "ImpFrescas.csv", "ImpPassas.csv", "ImpSuco.csv"],
+      "Exportacao": ["ExpVinho.csv", "ExpEspumantes.csv", "ExpUva.csv", "ExpSuco.csv"]
+    }
+  }
