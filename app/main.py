@@ -1,47 +1,7 @@
-import os
-import json
-
-from consts import *
 from fastapi import FastAPI
+from tools.load_data import load_data
 
-
-def load_data():
-    dirname = os.path.dirname(__file__)
-    data_path = os.path.join(dirname, RELATIVE_DATA_PATH)
-    # print(data_path)
-
-    data = {}
-
-    # Load Comercializacao.json
-    with open(os.path.join(data_path, 'Comercializacao.json'), 'r', encoding='utf-8') as fp:
-        comercializacao_data = json.load(fp)
-        data['comercializacao'] = comercializacao_data
-
-    # Load Exportacao.json
-    with open(os.path.join(data_path, 'Exportacao.json'), 'r', encoding='utf-8') as fp:
-        exportacao_data = json.load(fp)
-        data['exportacao'] = exportacao_data
-
-    # Load Importacao.json
-    with open(os.path.join(data_path, 'Importacao.json'), 'r', encoding='utf-8') as fp:
-        importacao_data = json.load(fp)
-        data['importacao'] = importacao_data
-
-    # Load Processamento.json
-    with open(os.path.join(data_path, 'Processamento.json'), 'r', encoding='utf-8') as fp:
-        processamento_data = json.load(fp)
-        data['processamento_data'] = processamento_data
-
-    # Load Producao.json
-    with open(os.path.join(data_path, 'Producao.json'), 'r', encoding='utf-8') as fp:
-        producao_data = json.load(fp)
-        data['producao'] = producao_data
-
-    for k, entry in data.items(): 
-        print(k, type(entry))
-    
-    return data
-    
+  
 data = load_data()
 
 app = FastAPI()
@@ -61,19 +21,31 @@ async def get_producao():
 # GET processamento
 @app.get("/processamento")
 async def get_processamento():
-    return {"message": "Endpoint /processamento em andamento"}
+    processamento_data = data.copy()['processamento']
+    results_count = len(processamento_data)
+
+    return {"results": results_count, "data": processamento_data}
 
 # GET comercializacao
 @app.get("/comercializacao")
 async def get_comercializacao():
-    return {"message": "Endpoint /comercializacao em andamento"}
+    comercializacao_data = data.copy()['comercializacao']
+    results_count = len(comercializacao_data)
+
+    return {"results": results_count, "data": comercializacao_data}
 
 # GET importacao
 @app.get("/importacao")
 async def get_importacao():
-    return {"message": "Endpoint /importacao em andamento"}
+    importacao_data = data.copy()['importacao']
+    results_count = len(importacao_data)
+
+    return {"results": results_count, "data": importacao_data}
 
 # GET exportacao
 @app.get("/exportacao")
 async def get_exportacao():
-    return {"message": "Endpoint /exportacao em andamento"}
+    exportacao_data = data.copy()['exportacao']
+    results_count = len(exportacao_data)
+
+    return {"results": results_count, "data": exportacao_data}
