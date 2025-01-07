@@ -4,8 +4,8 @@ from pathlib import Path
 from consts import *
 
 def load_data():
-    dirname = os.path.dirname(__file__)
-    data_path = os.path.join(dirname, RELATIVE_DATA_PATH)
+    app_dir = Path(__file__).parents[1]
+    data_path = os.path.join(app_dir, RELATIVE_DATA_PATH)
 
     data = {}
     databases = ['Comercializacao.json','Exportacao.json','Importacao.json','Processamento.json','Producao.json']

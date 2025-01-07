@@ -11,6 +11,9 @@ from consts import SECRET_KEY, ALGORITHM, RELATIVE_DATA_PATH
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 
+# referencia para o path com os usuarios salvos
+dirname = os.path.dirname(__file__)
+data_path = os.path.join(dirname, RELATIVE_DATA_PATH)
 
 class UserUseCases:
     
@@ -20,8 +23,6 @@ class UserUseCases:
         password=crypt_context.hash(user.password) # senha em hash
 
         # to-do: onde e como salvar user/pass.
-        dirname = os.path.dirname(__file__)
-        data_path = os.path.join(dirname, RELATIVE_DATA_PATH)
         with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
             users_db = json.load(fp)
             users_db[username] = {'password': password}
@@ -29,9 +30,25 @@ class UserUseCases:
         with open(os.path.join(data_path, 'users_hashed.json'), 'w', encoding='utf-8') as fp:
             json.dump(users_db, fp)
 
-    def user_login(self, user: User, expires_in: int = 30):
+    def user_login(self, user: User, expires_in: int = 86400):
         # to-do: logica determinando se o user e senha estao corretos. Depende da solução adotada em user_register
         
+        # carregando usuarios salvos
+        with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
+            users_db = json.load(fp)
+
+            if users_db.get(user.username) is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail='Invalid username or password'
+                )
+
+            if not crypt_context.verify(user.password, users_db[user.username]['password']):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail='Invalid username or password'
+                )
+
         exp = datetime.now() + timedelta(minutes=expires_in) # definindo tempo de duração do token. Por enquanto sem validação. 
 
         # payload necessario para criacao do token
@@ -47,3 +64,22 @@ class UserUseCases:
             'access_token': access_token,
             'exp': exp.isoformat()
         }
+
+    def verify_token(self, access_token):
+        try:
+            data = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid access token 1 {} {}'.format(access_token, e)
+            )
+        
+        # carregando usuarios salvos
+        with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
+            users_db = json.load(fp)
+
+        if users_db.get(data['sub']) is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid access token 2'
+            )

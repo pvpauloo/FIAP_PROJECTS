@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, Depends, Response
-from routes import user_router
+from routes import user_router, data_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,11 +10,6 @@ import json
 import os
 import sys
 from pathlib import Path
-
-from tools.download_prepare_files import *
-from tools.load_data import load_data
-
-data = load_data()
 
 app = FastAPI()
 
@@ -35,6 +30,7 @@ app.add_middleware(
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(user_router)
+app.include_router(data_router)
 
 authenticated_users = {}
 
@@ -75,42 +71,4 @@ async def validate_user(user: User, response: Response):
     response.set_cookie(key="auth_token", value=token,httponly=True)  # Armazena o token no cookie
     return {"message": "Usuário autenticado com sucesso.", "username": validated_user["username"]}
 
-# GET producao
-@app.get("/prepare_files")
-def prepare_files():
-    processar_dados(RELATIVE_DATA_PATH)
 
-# GET producao
-@app.get("/producao")
-async def get_producao():
-    producao_data = data.copy()['producao']
-    results_count = len(producao_data)
-    return {"results": results_count, "data": producao_data}
-
-# GET processamento
-@app.get("/processamento")
-async def get_processamento():
-    processamento_data = data.copy()['processamento']
-    results_count = len(processamento_data)
-    return {"results": results_count, "data": processamento_data}
-
-# GET comercializacao
-@app.get("/comercializacao")
-async def get_comercializacao():
-    comercializacao_data = data.copy()['comercializacao']
-    results_count = len(comercializacao_data)
-    return {"results": results_count, "data": comercializacao_data}
-
-# GET importacao
-@app.get("/importacao")
-async def get_importacao():
-    importacao_data = data.copy()['importacao']
-    results_count = len(importacao_data)
-    return {"results": results_count, "data": importacao_data}
-
-# GET exportacao
-@app.get("/exportacao")
-async def get_exportacao():
-    exportacao_data = data.copy()['exportacao']
-    results_count = len(exportacao_data)
-    return {"results": results_count, "data": exportacao_data}
