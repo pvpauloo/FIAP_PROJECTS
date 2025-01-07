@@ -3,7 +3,7 @@
 RELATIVE_DATA_PATH = 'db/db_json/'
 
 # config para criacao do token 
-SECRET_KEY = '9a4a5717996f3284fbd1d627a5eb2c6a7e4240b938a3559bbf99ff0a9027409c'
+SECRET_KEY = '0ea52afffae599466c8751da48f2f41b011b5a23b4ca44561311d827e944406f'
 ALGORITHM = 'HS256'
 
 baseURL= "http://vitibrasil.cnpuv.embrapa.br/download/"

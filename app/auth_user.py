@@ -1,10 +1,13 @@
+import os
+import json
+
 from datetime import datetime, timedelta
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from app.schemas import User
-from consts import SECRET_KEY, ALGORITHM
+from schemas import User
+from consts import SECRET_KEY, ALGORITHM, RELATIVE_DATA_PATH
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 
@@ -17,6 +20,14 @@ class UserUseCases:
         password=crypt_context.hash(user.password) # senha em hash
 
         # to-do: onde e como salvar user/pass.
+        dirname = os.path.dirname(__file__)
+        data_path = os.path.join(dirname, RELATIVE_DATA_PATH)
+        with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
+            users_db = json.load(fp)
+            users_db[username] = {'password': password}
+        
+        with open(os.path.join(data_path, 'users_hashed.json'), 'w', encoding='utf-8') as fp:
+            json.dump(users_db, fp)
 
     def user_login(self, user: User, expires_in: int = 30):
         # to-do: logica determinando se o user e senha estao corretos. Depende da solução adotada em user_register

@@ -1,14 +1,18 @@
 from fastapi import FastAPI, Request, HTTPException, Depends, Response
-from tools.load_data import load_data
+from routes import user_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from tools.download_prepare_files import *
+
 from schemas import User
 from consts import *
 import json
 import os
+import sys
 from pathlib import Path
+
+from tools.download_prepare_files import *
+from tools.load_data import load_data
 
 data = load_data()
 
@@ -30,6 +34,7 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="templates")
 
+app.include_router(user_router)
 
 authenticated_users = {}
 
