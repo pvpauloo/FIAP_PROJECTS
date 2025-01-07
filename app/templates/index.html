@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://play-lh.googleusercontent.com/S70rI7VrwLic7_p-ax7iAOOopQhcPCzmqyLe5RLJmApTpkgTRaCwWsTNN1Uv1t_t3Pp5=w240-h480-rw" sizes="32x32">
+    <title>Login Tech Challenge</title>
+</head>
+<body>
+<br>
+<br>
+    <div class="cont">
+        <div class="form sign-in">
+            <h2>Bem Vindo!</h2>
+            <label>
+                <span>Email</span>
+                <input id="username" type="email" />
+            </label>
+            <label>
+                <span>Senha</span>
+                <input id="password" type="password" />
+            </label>
+            <p class="forgot-pass">Esqueceu sua senha?</p>
+            <button type="button"  id="signin-button" class="submit">Sign In</button>
+         
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                 
+                    <h3>Não tem uma conta? Por Favor se Registre!</h3>
+                </div>
+                <div class="img__text m--in">
+                
+                    <h3>Se você já tem uma conta, apenas autentique.</h3>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">Sign Up</span>
+                    <span class="m--in">Sign In</span>
+                </div>
+            </div>
+            <div class="form sign-up">
+                <h2>Crie sua Conta</h2>
+                <label>
+                    <span>Nome</span>
+                    <input type="text" />
+                </label>
+                <label>
+                    <span>Email</span>
+                    <input type="email" />
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input type="password" />
+                </label>
+                <button type="button" class="submit">Sign Up</button>
+                
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <script>
+        document.querySelector('.img__btn').addEventListener('click', function() {
+            document.querySelector('.cont').classList.toggle('s--signup');
+        });
+        document.getElementById('signin-button').addEventListener('click', async function(){
+            const apiUrl = "http://127.0.0.1:8000/validate_user";
+
+            // Obtém os valores de entrada
+            const username = document.getElementById('username').value; // Renomeado para "username"
+            const password = document.getElementById('password').value;
+
+            try {
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }), // Certifique-se de que os campos correspondem ao modelo
+                });
+                console.log('Resposta da API:', response);
+                if (!response.ok) {
+                    throw new Error(`Erro: ${response.status} ${response.statusText}`);
+                }
+
+                // Processa a resposta como JSON
+                const data = await response.json();
+                console.log('Resposta da API:', data);
+                window.location.href = '/get_token';
+            } catch (error) {
+                console.error('Erro ao validar o usuário:', error);
+                alert("Erro ao autenticar. Verifique suas credenciais.");
+            }
+        });
+        // Redireciona para a rota /get_token ao clicar no botão "Sign In"
+        /*document.getElementById('signin-button').addEventListener('click', function() {
+            window.location.href = '/get_token';
+        });*/
+    </script>
+</body>
+</html>

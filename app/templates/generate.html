@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Token</title>
+    <style>
+        body {background: antiquewhite;}
+    </style>
+</head>
+<body>
+    <div class="v-screen h-screen flex items-center justify-center">
+  
+        <div class="w-full md:w-2/3 bg-white border border-gray-400 md:rounded p-3">
+          <h1 class="text-xl font-semibold">Gere uma token de acesso</h1>
+          <p class="my-2 text-sm">
+          Clique no botão "Gerar" para criar uma token de acesso.
+          </p>
+          
+          <div class="mb-4 w-full" x-data="{ uuid: '', copied: false }">
+            <label class="flex text-gray-700 text-sm font-bold mb-2" for="key">
+              Token
+              <span x-show="copied" class="ml-auto text-blue-500 font-semibold" x-transition x-cloak>
+                Código copiado para a área de transferência
+              </span>
+            </label>
+            <input 
+              :value="uuid" 
+              @click="navigator.clipboard.writeText(uuid).then(() => copied = true)" 
+              class="font-medium shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer" 
+              id="uuid" 
+              type="text" 
+              placeholder="" 
+              readonly>
+            
+            <button 
+              @click="uuid = generateUUID(); copied = false" 
+              class="bg-black hover:bg-gray-800 rounded text-white font-medium px-3 py-1 mt-2">
+              Gerar
+            </button>
+          </div>
+          
+        </div>
+        
+      </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2" defer></script>
+<script>
+  function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+      });
+  }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.7.3/tailwind.min.css">
+</html>
