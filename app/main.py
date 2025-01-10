@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request, HTTPException, Depends, Response
+from fastapi import FastAPI, Request, HTTPException, Depends, Response,Query
 from routes import user_router, data_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-
-from schemas import User
+import uvicorn
+from depends import token_verifier
+from schemas import User, TokenSchema
 from consts import *
 import json
 import os
@@ -40,8 +41,6 @@ def get_user(username, password):
     with open(os.path.join(data_path, 'Users.json'), 'r', encoding='utf-8') as fp:
         users = json.load(fp)
     user = [x for x in users if x["username"] == username]
-    print(username)
-    print(password)
     if user:
         if user[0]["password"] == password:
             return user[0]
@@ -60,7 +59,10 @@ async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/get_token")
-async def get_token(request: Request, user: dict = Depends(authenticate_user)):
+async def get_token(request: Request, token: str = Query(...)):
+    user = token_verifier(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Token inválido.")
     return templates.TemplateResponse("generate.html", {"request": request})
 
 @app.post("/validate_user")
@@ -70,5 +72,7 @@ async def validate_user(user: User, response: Response):
     authenticated_users[token] = validated_user  # Salva o usuário autenticado
     response.set_cookie(key="auth_token", value=token,httponly=True)  # Armazena o token no cookie
     return {"message": "Usuário autenticado com sucesso.", "username": validated_user["username"]}
+
+
 
 

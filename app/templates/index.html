@@ -13,7 +13,7 @@
         <div class="form sign-in">
             <h2>Bem Vindo!</h2>
             <label>
-                <span>Email</span>
+                <span>Usuário</span>
                 <input id="username" type="email" />
             </label>
             <label>
@@ -42,18 +42,14 @@
             <div class="form sign-up">
                 <h2>Crie sua Conta</h2>
                 <label>
-                    <span>Nome</span>
-                    <input type="text" />
+                    <span>Usuário</span>
+                    <input id="new_username" type="email" />
                 </label>
                 <label>
-                    <span>Email</span>
-                    <input type="email" />
+                    <span>Senha</span>
+                    <input id="new_password" type="password" />
                 </label>
-                <label>
-                    <span>Password</span>
-                    <input type="password" />
-                </label>
-                <button type="button" class="submit">Sign Up</button>
+                <button id="signup-button" type="button" class="submit">Sign Up</button>
                 
             </div>
         </div>
@@ -63,12 +59,10 @@
         document.querySelector('.img__btn').addEventListener('click', function() {
             document.querySelector('.cont').classList.toggle('s--signup');
         });
-        document.getElementById('signin-button').addEventListener('click', async function(){
-            const apiUrl = "http://127.0.0.1:8000/validate_user";
-
-            // Obtém os valores de entrada
-            const username = document.getElementById('username').value; // Renomeado para "username"
-            const password = document.getElementById('password').value;
+        document.getElementById('signup-button').addEventListener('click', async function(){
+            const apiUrl = "http://127.0.0.1:8000/user/register";
+            const username = document.getElementById('new_username').value; 
+            const password = document.getElementById('new_password').value;
 
             try {
 
@@ -77,26 +71,75 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, password }), // Certifique-se de que os campos correspondem ao modelo
+                    body: JSON.stringify({ username, password }), 
                 });
                 console.log('Resposta da API:', response);
                 if (!response.ok) {
-                    throw new Error(`Erro: ${response.status} ${response.statusText}`);
+                    const errorResponse = await response.json();
+                    const errorMessage = errorResponse.detail || `Erro: ${response.status} ${response.statusText}`;
+                    throw new Error(errorMessage);
                 }
 
-                // Processa a resposta como JSON
-                const data = await response.json();
-                console.log('Resposta da API:', data);
-                window.location.href = '/get_token';
-            } catch (error) {
-                console.error('Erro ao validar o usuário:', error);
-                alert("Erro ao autenticar. Verifique suas credenciais.");
-            }
+                    const data = await response.json();
+                    console.log('Resposta da API:', data);
+                    alert(`Usuário criado com sucesso!`);
+                    window.location.href = '/';
+                } catch (error) {
+                    alert(`${error.message}`);
+                }
         });
-        // Redireciona para a rota /get_token ao clicar no botão "Sign In"
-        /*document.getElementById('signin-button').addEventListener('click', function() {
-            window.location.href = '/get_token';
-        });*/
+        async function loginUser(username, password) {
+            const loginUrl = "http://127.0.0.1:8000/user/login";
+
+            const requestBody = new URLSearchParams();
+            requestBody.append('username', username);
+            requestBody.append('password', password);
+
+            try {
+                const response = await fetch(loginUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: requestBody
+                });
+
+                if (!response.ok) {
+                    // Erro retornado pelo servidor
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Erro ao fazer login');
+                }
+
+                const data = await response.json(); 
+                console.log('Login bem-sucedido:', data);
+                return data; 
+
+            } catch (error) {
+                console.error('Erro ao fazer login:', error.message);
+                throw error;
+            }
+        }
+        async function getToken() {
+            const url = "http://127.0.0.1:8000/get_token";
+            const token = sessionStorage.getItem('access_token'); // Ou sessionStorage, dependendo de onde você salvou o token
+
+            window.location.href = `http://127.0.0.1:8000/get_token?token=${encodeURIComponent(token)}`;
+        }
+        document.getElementById('signin-button').addEventListener('click', async function(){
+            const apiUrl = "http://127.0.0.1:8000/user/login";
+
+            const username = document.getElementById('username').value; 
+            const password = document.getElementById('password').value;
+            loginUser(username, password)
+            .then(data => {
+                sessionStorage.setItem('access_token', data.access_token);
+                console.log('Token recebido:', data.access_token);
+                getToken();
+            })
+            .catch(error => {
+                console.error('Falha no login:', error.message);
+            });
+        });
     </script>
 </body>
 </html>

@@ -11,3 +11,4 @@ def token_verifier(
 ):
     uc = UserUseCases()
     uc.verify_token(access_token=token)
+    return True

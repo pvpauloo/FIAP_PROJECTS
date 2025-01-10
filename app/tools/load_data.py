@@ -18,8 +18,5 @@ def load_data():
         except Exception as e:
             #preenche com lista vazia caso não exista
             data[Path(item).stem.lower()] = []
-
-    for k, entry in data.items(): 
-        print(k, type(entry))
     
     return data

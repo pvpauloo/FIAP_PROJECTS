@@ -20,15 +20,21 @@ class UserUseCases:
     # Metodo sem uso por enquanto
     def user_register(self, user: User):
         username = user.username
-        password=crypt_context.hash(user.password) # senha em hash
-
-        # to-do: onde e como salvar user/pass.
-        with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
-            users_db = json.load(fp)
-            users_db[username] = {'password': password}
+        password=crypt_context.hash(user.password) 
+        if user:
+            if username!="" and password!="":
+                # to-do: onde e como salvar user/pass.
+                with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
+                    users_db = json.load(fp)
+                    if not username in users_db:
+                        users_db[username] = {'password': password}
+                    else:
+                        raise HTTPException(status_code=401, detail="Usuário já cadastrado.",headers={"Error": "Usuário já cadastrado."})
+                with open(os.path.join(data_path, 'users_hashed.json'), 'w', encoding='utf-8') as fp:
+                    json.dump(users_db, fp)
+            else:
+                raise HTTPException(status_code=401, detail="Usuário ou senha inválidos.")
         
-        with open(os.path.join(data_path, 'users_hashed.json'), 'w', encoding='utf-8') as fp:
-            json.dump(users_db, fp)
 
     def user_login(self, user: User, expires_in: int = 86400):
         # to-do: logica determinando se o user e senha estao corretos. Depende da solução adotada em user_register
@@ -64,7 +70,29 @@ class UserUseCases:
             'access_token': access_token,
             'exp': exp.isoformat()
         }
+    
+    def renew_token(self,access_token:str, expires_in: int = 86400):
+        if self.verify_token(access_token):
+            data = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            exp = datetime.now() + timedelta(minutes=expires_in)
 
+            payload = {
+                'sub': data['sub'],
+                'exp': exp
+            }
+
+
+            access_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+            return {
+                'access_token': access_token,
+                'exp': exp.isoformat()
+            }
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid access token'
+        )
+    
     def verify_token(self, access_token):
         try:
             data = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -77,9 +105,9 @@ class UserUseCases:
         # carregando usuarios salvos
         with open(os.path.join(data_path, 'users_hashed.json'), 'r', encoding='utf-8') as fp:
             users_db = json.load(fp)
-
         if users_db.get(data['sub']) is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='Invalid access token 2'
             )
+        return True
