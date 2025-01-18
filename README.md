@@ -6,9 +6,34 @@ Dentre os endpoints disponíveis temos os seguintes:
 
 **Comercialização:** Está relacionado a informações sobre a venda e distribuição dos produtos de vitivinicultura. Possui detalhes sobre a quantidade de produtos vendidos e os valores associados.
 
+| Campo              | Tipo         | Descrição                                    |
+|--------------------|--------------|--------------------------------------------|
+| `Ano`             | `int`        | Ano da produção.                           |
+| `Id`          | `int`     | Identificação do elemento.            |
+| `Control`        | `string`     | Nome de controle do produto.                     |
+| `Produto`   | `string`      | Nome do produto.                 |
+| `Tipo`      | `string`      | Tipo do produto.         |
+| `Valor`      | `int`      | Valor do produto vendido.         |
+
 **Exportação**: Está relacionado a dados sobre a exportação de produtos de vitivinicultura. Inclui informações sobre volumes exportados, países de destino, tipos de produtos enviados e os valores gerados pelas exportações.
 
+| Campo              | Tipo         | Descrição                                    |
+|--------------------|--------------|--------------------------------------------|
+| `Ano`             | `int`        | Ano da produção.                           |
+| `Id`          | `int`     | Identificação do elemento.            |
+| `País`   | `string`      | País de destino da exportação.                 |
+| `Source`      | `string`      | Fonte de onde os dados foram retirados.         |
+| `Valor`      | `int`      | Valor do produto vendido.         |
+
 **Importação**: Está relacionado a informações sobre a importação de produtos de vitivinicultura. Seus detalhes incluem os volumes importados, países de origem, tipos de produtos adquiridos e valores envolvidos nas transações.
+
+| Campo              | Tipo         | Descrição                                    |
+|--------------------|--------------|--------------------------------------------|
+| `Ano`             | `int`        | Ano da produção.                           |
+| `Id`          | `int`     | Identificação do elemento.            |
+| `País`   | `string`      | País de origem da importação.                 |
+| `Source`      | `string`      | Fonte de onde os dados foram retirados.         |
+| `Valor`      | `int`      | Valor do produto vendido.         |
 
 **Produção**: Está relacionado a informações sobre a produção de produtos de vitivinicultura. Inclui detalhes como áreas plantadas, tipos de uvas cultivadas, métodos de cultivo utilizados e volumes de produção em diferentes regiões e períodos.
 
@@ -22,3 +47,13 @@ Dentre os endpoints disponíveis temos os seguintes:
 | `Valor`      | `int`      | Valor do produto vendido.         |
 
 **Processamento**: Está relacionado aos dados sobre o processamento dos produtos da vitivinicultura. Inclui informações sobre os métodos de vinificação, volumes processados, tipos de produtos finais (como vinhos, sucos e destilados) e as etapas de produção envolvidas.
+
+| Campo              | Tipo         | Descrição                                    |
+|--------------------|--------------|--------------------------------------------|
+| `Ano`             | `int`        | Ano da produção.                           |
+| `Id`          | `int`     | Identificação do elemento.            |
+| `Control`        | `string`     | Nome de controle do produto.                     |
+| `Cultivar`   | `string`      | Espécie da uva.                 |
+| `Tipo`      | `string`      | Tipo do produto.         |
+| `Valor`      | `int`      | Valor do produto vendido.         |
+| `Source`      | `string`      | Fonte de onde os dados foram retirados.         |
