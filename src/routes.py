@@ -41,11 +41,6 @@ def user_register(
         status_code=status.HTTP_200_OK
     )
 
-@user_router.post('/renew_token')
-def user_register(token:TokenSchema):
-    uc = UserUseCases()
-    return uc.renew_token(token)
-
 # GET producao
 @data_router.get("/prepare_files")
 def prepare_files():
@@ -85,6 +80,7 @@ async def get_processamento(query: Optional[str] = Query(None)):
 @data_router.get("/comercializacao")
 async def get_comercializacao(query: Optional[str] = Query(None)):
     comercializacao_data = data.copy()['comercializacao']
+    
     for i,_ in enumerate(comercializacao_data):
         comercializacao_data[i]["Ano"] = int(comercializacao_data[i]["Ano"])
     if query:
@@ -100,8 +96,7 @@ async def get_comercializacao(query: Optional[str] = Query(None)):
 @data_router.get("/importacao")
 async def get_importacao(query: Optional[str] = Query(None)):
     importacao_data = data.copy()['importacao']
-    for i,_ in enumerate(importacao_data):
-        importacao_data[i]["Ano"] = int(importacao_data[i]["Ano"])
+    importacao_data['Ano'] = importacao_data['Ano'].apply(lambda x: int(float(x)))
     if query:
         try:
             results = filtro(query,importacao_data)
@@ -115,8 +110,7 @@ async def get_importacao(query: Optional[str] = Query(None)):
 @data_router.get("/exportacao")
 async def get_exportacao(query: Optional[str] = Query(None)):
     exportacao_data = data.copy()['exportacao']
-    for i,_ in enumerate(exportacao_data):
-        exportacao_data[i]["Ano"] = int(exportacao_data[i]["Ano"])
+    exportacao_data['Ano'] = exportacao_data['Ano'].apply(lambda x: int(float(x)))
     if query:
         try:
             results = filtro(query,exportacao_data)
