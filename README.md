@@ -101,3 +101,6 @@ Após gerado o token, ele deve ser passado no header da seguinte forma:
 ```
 
 # Desenho da Arquitetura
+
+![Untitled-2025-01-19-1650](https://github.com/user-attachments/assets/a6d1e2a1-079e-43d1-a587-7f616c585267)
+
