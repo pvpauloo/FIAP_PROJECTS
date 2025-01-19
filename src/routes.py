@@ -96,7 +96,8 @@ async def get_comercializacao(query: Optional[str] = Query(None)):
 @data_router.get("/importacao")
 async def get_importacao(query: Optional[str] = Query(None)):
     importacao_data = data.copy()['importacao']
-    importacao_data['Ano'] = importacao_data['Ano'].apply(lambda x: int(float(x)))
+    for i,_ in enumerate(importacao_data):
+        importacao_data[i]["Ano"] = int(float(importacao_data[i]["Ano"]))
     if query:
         try:
             results = filtro(query,importacao_data)
@@ -110,7 +111,8 @@ async def get_importacao(query: Optional[str] = Query(None)):
 @data_router.get("/exportacao")
 async def get_exportacao(query: Optional[str] = Query(None)):
     exportacao_data = data.copy()['exportacao']
-    exportacao_data['Ano'] = exportacao_data['Ano'].apply(lambda x: int(float(x)))
+    for i,_ in enumerate(exportacao_data):
+        exportacao_data[i]["Ano"] = int(float(exportacao_data[i]["Ano"]))
     if query:
         try:
             results = filtro(query,exportacao_data)
