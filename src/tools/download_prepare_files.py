@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import json
 import os
-from consts import *
+from ..consts import *
 
 def detect_delimiter(file_path):
     """Detecta o delimitador de um arquivo CSV."""

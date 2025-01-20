@@ -6,8 +6,8 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from schemas import User
-from consts import SECRET_KEY, ALGORITHM, RELATIVE_DATA_PATH
+from .schemas import User
+from .consts import SECRET_KEY, ALGORITHM, RELATIVE_DATA_PATH
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 

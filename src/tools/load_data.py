@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from consts import *
+from ..consts import *
 
 def load_data():
     app_dir = Path(__file__).parents[1]
