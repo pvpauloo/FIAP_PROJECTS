@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://play-lh.googleusercontent.com/S70rI7VrwLic7_p-ax7iAOOopQhcPCzmqyLe5RLJmApTpkgTRaCwWsTNN1Uv1t_t3Pp5=w240-h480-rw" sizes="32x32">
+    <title>Login Tech Challenge</title>
+</head>
+<body>
+<br>
+<br>
+    <div class="cont">
+        <div class="form sign-in">
+            <h2>Bem Vindo!</h2>
+            <label>
+                <span>Usuário</span>
+                <input id="username" type="email" />
+            </label>
+            <label>
+                <span>Senha</span>
+                <input id="password" type="password" />
+            </label>
+            <p class="forgot-pass">Esqueceu sua senha?</p>
+            <button type="button"  id="signin-button" class="submit">Sign In</button>
+         
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                 
+                    <h3>Não tem uma conta? Por Favor se Registre!</h3>
+                </div>
+                <div class="img__text m--in">
+                
+                    <h3>Se você já tem uma conta, apenas autentique.</h3>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">Sign Up</span>
+                    <span class="m--in">Sign In</span>
+                </div>
+            </div>
+            <div class="form sign-up">
+                <h2>Crie sua Conta</h2>
+                <label>
+                    <span>Usuário</span>
+                    <input id="new_username" type="email" />
+                </label>
+                <label>
+                    <span>Senha</span>
+                    <input id="new_password" type="password" />
+                </label>
+                <button id="signup-button" type="button" class="submit">Sign Up</button>
+                
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <script>
+        document.querySelector('.img__btn').addEventListener('click', function() {
+            document.querySelector('.cont').classList.toggle('s--signup');
+        });
+        document.getElementById('signup-button').addEventListener('click', async function(){
+            const apiUrl = "http://127.0.0.1:8000/user/register";
+            const username = document.getElementById('new_username').value; 
+            const password = document.getElementById('new_password').value;
+
+            try {
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }), 
+                });
+                console.log('Resposta da API:', response);
+                if (!response.ok) {
+                    const errorResponse = await response.json();
+                    const errorMessage = errorResponse.detail || `Erro: ${response.status} ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+
+                    const data = await response.json();
+                    console.log('Resposta da API:', data);
+                    alert(`Usuário criado com sucesso!`);
+                    window.location.href = '/';
+                } catch (error) {
+                    alert(`${error.message}`);
+                }
+        });
+        async function loginUser(username, password) {
+            const loginUrl = "http://127.0.0.1:8000/user/login";
+
+            const requestBody = new URLSearchParams();
+            requestBody.append('username', username);
+            requestBody.append('password', password);
+
+            try {
+                const response = await fetch(loginUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: requestBody
+                });
+
+                if (!response.ok) {
+                    // Erro retornado pelo servidor
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Erro ao fazer login');
+                }
+
+                const data = await response.json(); 
+                console.log('Login bem-sucedido:', data);
+                return data; 
+
+            } catch (error) {
+                console.error('Erro ao fazer login:', error.message);
+                throw error;
+            }
+        }
+        async function getToken() {
+            const url = "http://127.0.0.1:8000/get_token";
+            const token = sessionStorage.getItem('access_token'); // Ou sessionStorage, dependendo de onde você salvou o token
+
+            window.location.href = `http://127.0.0.1:8000/get_token?token=${encodeURIComponent(token)}`;
+        }
+        document.getElementById('signin-button').addEventListener('click', async function(){
+            const apiUrl = "http://127.0.0.1:8000/user/login";
+
+            const username = document.getElementById('username').value; 
+            const password = document.getElementById('password').value;
+            loginUser(username, password)
+            .then(data => {
+                sessionStorage.setItem('access_token', data.access_token);
+                console.log('Token recebido:', data.access_token);
+                getToken();
+            })
+            .catch(error => {
+                console.error('Falha no login:', error.message);
+            });
+        });
+    </script>
+</body>
+</html>

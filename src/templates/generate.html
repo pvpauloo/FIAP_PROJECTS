@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Token</title>
+    <style>
+        body {background: antiquewhite;}
+    </style>
+</head>
+<body>
+    <div class="v-screen h-screen flex items-center justify-center">
+        <div class="w-full md:w-2/3 bg-white border border-gray-400 md:rounded p-3" x-data="tokenHandler()">
+            <h1 class="text-xl font-semibold">Gere uma token de acesso</h1>
+            <p class="my-2 text-sm">
+                Clique no botão "Gerar" para criar uma token de acesso.
+            </p>
+            <div class="mb-4 w-full">
+                <label class="flex text-gray-700 text-sm font-bold mb-2" for="key">
+                    Token
+                    <span x-show="copied" class="ml-auto text-blue-500 font-semibold" x-transition x-cloak>
+                        Código copiado para a área de transferência
+                    </span>
+                </label>
+                <input 
+                    :value="token" 
+                    @click="copyToClipboard()" 
+                    class="font-medium shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer" 
+                    id="uuid" 
+                    type="text" 
+                    placeholder="Clique para copiar" 
+                    readonly>
+                
+                <button 
+                    @click="generateToken()" 
+                    class="bg-black hover:bg-gray-800 rounded text-white font-medium px-3 py-1 mt-2">
+                    Gerar
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    async function renewToken(token) {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/user/renew_token", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ access_token: token })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Resposta do servidor:', data);
+
+      sessionStorage.setItem('access_token', data['access_token']);
+      console.log(data)
+      return data['access_token'];
+    } catch (error) {
+      console.error('Erro ao renovar o token:', error);
+    }
+  }
+
+  function tokenHandler() {
+    return {
+      token: sessionStorage.getItem('access_token'), // Armazena o token gerado
+      copied: false, // Indica se o token foi copiado
+
+      // Inicializa o componente
+      init() {
+        // Se não existir, mostra "Nenhum token encontrado"
+        this.token = sessionStorage.getItem('access_token') || 'Nenhum token encontrado';
+        console.log("Token inicial:", this.token);
+      },
+
+      // Torna a função generateToken assíncrona
+      async generateToken() {
+        // Use await para receber o valor real do token
+        this.token = await renewToken(sessionStorage.getItem('access_token'));
+        this.copied = false;
+        console.log("Novo token gerado:", this.token);
+      },
+
+      // Copia o token para a área de transferência
+      copyToClipboard() {
+        navigator.clipboard.writeText(this.token).then(() => {
+          this.copied = true;
+          console.log("Token copiado:", this.token);
+        });
+      },
+    };
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2" defer></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.7.3/tailwind.min.css">
+</html>
