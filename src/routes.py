@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, status, Query
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from auth_user import UserUseCases
-from depends import token_verifier
-from schemas import User, TokenSchema
-from tools.filtro import filtro
-from tools.download_prepare_files import *
-from tools.load_data import load_data
+from .auth_user import UserUseCases
+from .depends import token_verifier
+from .schemas import User, TokenSchema
+from .tools.filtro import filtro
+from .tools.download_prepare_files import *
+from .tools.load_data import load_data
 from typing import Optional, List, Dict, Any
 data = load_data()
 
